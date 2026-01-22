@@ -8,6 +8,7 @@ use core::fmt;
 use core::hash::Hash;
 use core::hash::Hasher;
 use core::net::{Ipv4Addr,Ipv6Addr};
+use core::time::Duration;
 use kollect::LinearSet;
 
 use kollect::LinearMap;
@@ -54,6 +55,10 @@ pub enum Value {
     char(char),
     f32(f32),
     f64(f64),
+    Ipv4Addr(Ipv4Addr),
+    Ipv6Addr(Ipv6Addr),
+    #[cfg_attr(feature = "serde", serde(deserialize_with="duration_str::deserialize_duration", serialize_with="serialize_duration"))]
+    Duration(Duration),
     String(String),
     StructValue(Box<StructValue>),
     EnumValue(Box<EnumValue>),
@@ -62,8 +67,15 @@ pub enum Value {
     List(Vec<Value>),
     Set(LinearSet<Value>),
     Map(LinearMap<Value, Value>),
-    Ipv4Addr(Ipv4Addr),
-    Ipv6Addr(Ipv6Addr),
+}
+
+#[cfg(feature = "serde")]
+fn serialize_duration<S>(duration: &Duration, ser: S) -> Result<S::Ok,S::Error>
+where
+    S: serde::ser::Serializer,
+{
+    use duration_str::{HumanFormat};
+    ser.serialize_str(&duration.human_format())
 }
 
 impl FromReflect for Value {
@@ -100,6 +112,7 @@ enum OrdEqHashValue<'a> {
     Map(&'a LinearMap<Value, Value>),
     Ipv4Addr(Ipv4Addr),
     Ipv6Addr(Ipv6Addr),
+    Duration(Duration),
 }
 
 impl<'a> From<&'a Value> for OrdEqHashValue<'a> {
@@ -130,6 +143,7 @@ impl<'a> From<&'a Value> for OrdEqHashValue<'a> {
             Value::Map(inner) => OrdEqHashValue::Map(inner),
             Value::Ipv4Addr(inner) => OrdEqHashValue::Ipv4Addr(*inner),
             Value::Ipv6Addr(inner) => OrdEqHashValue::Ipv6Addr(*inner),
+            Value::Duration(inner) => OrdEqHashValue::Duration(*inner),
         }
     }
 }
@@ -191,6 +205,7 @@ macro_rules! for_each_variant {
             Value::Map($inner) => $expr,
             Value::Ipv4Addr($inner) => $expr,
             Value::Ipv6Addr($inner) => $expr,
+            Value::Duration($inner) => $expr,
         }
     };
 }
@@ -270,8 +285,9 @@ impl Reflect for Value {
             Value::List(inner) => ReflectOwned::List(Box::new(inner)),
             Value::Set(inner) => ReflectOwned::Set(Box::new(inner)),
             Value::Map(inner) => ReflectOwned::Map(Box::new(inner)),
-            Value::Ipv4Addr(_) => todo!(),
-            Value::Ipv6Addr(_) => todo!(),
+            Value::Ipv4Addr(inner) => ReflectOwned::Scalar(ScalarOwned::Ipv4Addr(inner)),
+            Value::Ipv6Addr(inner) => ReflectOwned::Scalar(ScalarOwned::Ipv6Addr(inner)),
+            Value::Duration(inner) => ReflectOwned::Scalar(ScalarOwned::Duration(inner)),
         }
     }
 
@@ -293,6 +309,9 @@ impl Reflect for Value {
             Value::f32(inner) => ReflectRef::Scalar(ScalarRef::from(*inner)),
             Value::f64(inner) => ReflectRef::Scalar(ScalarRef::from(*inner)),
             Value::String(inner) => ReflectRef::Scalar(ScalarRef::from(inner)),
+            Value::Ipv4Addr(inner) => ReflectRef::Scalar(ScalarRef::Ipv4Addr(*inner)),
+            Value::Ipv6Addr(inner) => ReflectRef::Scalar(ScalarRef::Ipv6Addr(*inner)),
+            Value::Duration(inner) => ReflectRef::Scalar(ScalarRef::Duration(*inner)),
             Value::StructValue(inner) => ReflectRef::Struct(&**inner),
             Value::EnumValue(inner) => ReflectRef::Enum(&**inner),
             Value::TupleStructValue(inner) => ReflectRef::TupleStruct(inner),
@@ -300,8 +319,6 @@ impl Reflect for Value {
             Value::List(inner) => ReflectRef::List(inner),
             Value::Set(inner) => ReflectRef::Set(inner),
             Value::Map(inner) => ReflectRef::Map(inner),
-            Value::Ipv4Addr(_) => todo!(),
-            Value::Ipv6Addr(_) => todo!(),
         }
     }
 
@@ -323,6 +340,9 @@ impl Reflect for Value {
             Value::f32(inner) => ReflectMut::Scalar(ScalarMut::from(inner)),
             Value::f64(inner) => ReflectMut::Scalar(ScalarMut::from(inner)),
             Value::String(inner) => ReflectMut::Scalar(ScalarMut::from(inner)),
+            Value::Ipv4Addr(inner) => ReflectMut::Scalar(ScalarMut::from(inner)),
+            Value::Ipv6Addr(inner) => ReflectMut::Scalar(ScalarMut::from(inner)),
+            Value::Duration(inner) => ReflectMut::Scalar(ScalarMut::from(inner)),
             Value::StructValue(inner) => ReflectMut::Struct(&mut **inner),
             Value::EnumValue(inner) => ReflectMut::Enum(&mut **inner),
             Value::TupleStructValue(inner) => ReflectMut::TupleStruct(inner),
@@ -330,8 +350,6 @@ impl Reflect for Value {
             Value::List(inner) => ReflectMut::List(inner),
             Value::Set(inner) => ReflectMut::Set(inner),
             Value::Map(inner) => ReflectMut::Map(inner),
-            Value::Ipv4Addr(_) => todo!(),
-            Value::Ipv6Addr(_) => todo!(),
         }
     }
 
@@ -401,4 +419,5 @@ from_impls! {
     bool char String
     TupleValue TupleStructValue
     Ipv4Addr Ipv6Addr
+    Duration
 }

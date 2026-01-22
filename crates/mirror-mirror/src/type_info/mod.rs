@@ -264,6 +264,7 @@ impl<'a> Type<'a> {
                     ScalarNode::String => ScalarType::String,
                     ScalarNode::Ipv4Addr => ScalarType::Ipv4Addr,
                     ScalarNode::Ipv6Addr => ScalarType::Ipv6Addr,
+                    ScalarNode::Duration => ScalarType::Duration,
                 };
                 Type::Scalar(node)
             }
@@ -366,6 +367,7 @@ impl<'a> Type<'a> {
                 ScalarType::String => <String as DescribeType>::type_descriptor(),
                 ScalarType::Ipv4Addr => <core::net::Ipv4Addr as DescribeType>::type_descriptor(),
                 ScalarType::Ipv6Addr => <core::net::Ipv6Addr as DescribeType>::type_descriptor(),
+                ScalarType::Duration => <core::time::Duration as DescribeType>::type_descriptor(),
             },
             Type::Opaque(inner) => Cow::Owned(inner.into_type_descriptor()),
         }
@@ -630,6 +632,7 @@ pub enum ScalarType {
     String,
     Ipv4Addr,
     Ipv6Addr,
+    Duration,
 }
 
 impl ScalarType {
@@ -653,6 +656,7 @@ impl ScalarType {
             ScalarType::String => type_name::<String>(),
             ScalarType::Ipv4Addr => type_name::<core::net::Ipv4Addr>(),
             ScalarType::Ipv6Addr => type_name::<core::net::Ipv6Addr>(),
+            ScalarType::Duration => type_name::<core::time::Duration>(),
         }
     }
 
@@ -680,6 +684,7 @@ impl ScalarType {
             ScalarType::String => String::default().to_value(),
             ScalarType::Ipv4Addr => core::net::Ipv4Addr::LOCALHOST.to_value(),
             ScalarType::Ipv6Addr => core::net::Ipv6Addr::LOCALHOST.to_value(),
+            ScalarType::Duration => core::time::Duration::default().to_value(),
         }
     }
 

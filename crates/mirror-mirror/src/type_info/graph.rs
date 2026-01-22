@@ -8,6 +8,7 @@ use core::hash::Hash;
 use core::hash::Hasher;
 use core::net::{Ipv4Addr,Ipv6Addr};
 use core::ops::Deref;
+use core::time::Duration;
 use kollect::LinearMap;
 
 use super::*;
@@ -540,6 +541,7 @@ pub enum ScalarNode {
     String,
     Ipv4Addr,
     Ipv6Addr,
+    Duration,
 }
 
 macro_rules! scalar_typed {
@@ -560,6 +562,7 @@ scalar_typed! {
     f32 f64
     bool char String
     Ipv4Addr Ipv6Addr
+    Duration
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

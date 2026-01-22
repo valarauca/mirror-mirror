@@ -4,6 +4,7 @@ use crate::{
 };
 use alloc::string::String;
 use core::net::{Ipv4Addr,Ipv6Addr};
+use core::time::{Duration};
 
 macro_rules! visit_scalar_fn {
     ($name:ident, $ty:ty) => {
@@ -37,6 +38,7 @@ pub trait TryVisit {
     visit_scalar_fn!(try_visit_string, &String);
     visit_scalar_fn!(try_visit_ipv4, Ipv4Addr);
     visit_scalar_fn!(try_visit_ipv6, Ipv6Addr);
+    visit_scalar_fn!(try_visit_duration, Duration);
 
     #[inline]
     fn try_visit_opaque(
@@ -74,6 +76,7 @@ where
                 ScalarRef::String(inner) => visitor.try_visit_string(inner)?,
                 ScalarRef::Ipv4Addr(inner) => visitor.try_visit_ipv4(inner)?,
                 ScalarRef::Ipv6Addr(inner) => visitor.try_visit_ipv6(inner)?,
+                ScalarRef::Duration(inner) => visitor.try_visit_duration(inner)?,
             }
         }
         Type::Struct(struct_ty) => {

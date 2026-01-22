@@ -15,7 +15,7 @@ keywords = ["reflection"]
 default = ["speedy", "serde", "simple_type_name","glam","macaw"]
 simple_type_name = ["dep:syn"]
 speedy = ["dep:speedy", "kollect/speedy", "glam/speedy"]
-serde = ["dep:serde", "kollect/serde"]
+serde = ["dep:serde", "kollect/serde", "dep:duration-str"]
 glam = ["dep:glam"]
 glam-scalar-math = ["glam/scalar-math"]
 macaw = ["dep:macaw"]
@@ -34,6 +34,7 @@ speedy = { version = "0.8", optional = true }
 syn = { version = "2.0", features = ["full", "parsing"], optional = true }
 glam = { version = ">= 0.28, <= 0.30", optional = true }
 macaw = { version = "0.30", optional = true }
+duration-str = { version = "0.18.0", optional = true }
 
 [dev-dependencies]
 mirror-mirror-1 = { package = "mirror-mirror", version = "0.1" }

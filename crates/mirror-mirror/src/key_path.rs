@@ -593,6 +593,7 @@ pub(crate) fn value_to_usize(value: &Value) -> Option<usize> {
         | Value::String(_)
         | Value::Ipv4Addr(_)
         | Value::Ipv6Addr(_)
+        | Value::Duration(_)
         | Value::StructValue(_)
         | Value::EnumValue(_)
         | Value::TupleStructValue(_)

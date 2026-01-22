@@ -9,7 +9,6 @@ use core::num::NonZeroU32;
 use core::num::NonZeroU64;
 use core::num::NonZeroU8;
 use core::num::NonZeroUsize;
-use core::time::Duration;
 
 macro_rules! impl_reflect_via_scalar {
     ($ty:ty, $via_ty:ty, $get_fn:expr, $new_fn:expr $(,)?) => {
@@ -97,8 +96,6 @@ impl_reflect_via_scalar! { NonZeroI32,   i32,   |n: &NonZeroI32| n.get(),   Self
 impl_reflect_via_scalar! { NonZeroI64,   i64,   |n: &NonZeroI64| n.get(),   Self::new }
 impl_reflect_via_scalar! { NonZeroI128,  i128,  |n: &NonZeroI128| n.get(),  Self::new }
 
-impl_reflect_via_scalar! { Duration, f32, |d: &Duration| d.as_secs_f32(), Self::from_secs_f32 }
-
 trait IntoOption<T> {
     fn into_option(self) -> Option<T>;
 }
@@ -130,7 +127,7 @@ mod tests {
         );
 
         assert_eq!(
-            <Duration as DescribeType>::type_descriptor()
+            <core::time::Duration as DescribeType>::type_descriptor()
                 .get_type()
                 .type_name(),
             "core::time::Duration"
