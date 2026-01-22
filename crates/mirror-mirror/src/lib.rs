@@ -1038,6 +1038,58 @@ impl ScalarOwned {
     }
 }
 
+impl From<ScalarRef<'_>> for ScalarOwned {
+    fn from(scalar_ref: ScalarRef) -> Self {
+        match scalar_ref {
+            ScalarRef::usize(inner) => ScalarOwned::usize(inner),
+            ScalarRef::u8(inner) => ScalarOwned::u8(inner),
+            ScalarRef::u16(inner) => ScalarOwned::u16(inner),
+            ScalarRef::u32(inner) => ScalarOwned::u32(inner),
+            ScalarRef::u64(inner) => ScalarOwned::u64(inner),
+            ScalarRef::u128(inner) => ScalarOwned::u128(inner),
+            ScalarRef::i8(inner) => ScalarOwned::i8(inner),
+            ScalarRef::i16(inner) => ScalarOwned::i16(inner),
+            ScalarRef::i32(inner) => ScalarOwned::i32(inner),
+            ScalarRef::i64(inner) => ScalarOwned::i64(inner),
+            ScalarRef::i128(inner) => ScalarOwned::i128(inner),
+            ScalarRef::bool(inner) => ScalarOwned::bool(inner),
+            ScalarRef::char(inner) => ScalarOwned::char(inner),
+            ScalarRef::f32(inner) => ScalarOwned::f32(inner),
+            ScalarRef::f64(inner) => ScalarOwned::f64(inner),
+            ScalarRef::String(inner) => ScalarOwned::String(inner.clone()),
+            ScalarRef::Ipv4Addr(inner) => ScalarOwned::Ipv4Addr(inner),
+            ScalarRef::Ipv6Addr(inner) => ScalarOwned::Ipv6Addr(inner),
+            ScalarRef::Duration(inner) => ScalarOwned::Duration(inner),
+        }
+    }
+}
+
+impl From<ScalarMut<'_>> for ScalarOwned {
+    fn from(scalar_ref: ScalarMut) -> Self {
+        match scalar_ref {
+            ScalarMut::usize(inner) => ScalarOwned::usize(*inner),
+            ScalarMut::u8(inner) => ScalarOwned::u8(*inner),
+            ScalarMut::u16(inner) => ScalarOwned::u16(*inner),
+            ScalarMut::u32(inner) => ScalarOwned::u32(*inner),
+            ScalarMut::u64(inner) => ScalarOwned::u64(*inner),
+            ScalarMut::u128(inner) => ScalarOwned::u128(*inner),
+            ScalarMut::i8(inner) => ScalarOwned::i8(*inner),
+            ScalarMut::i16(inner) => ScalarOwned::i16(*inner),
+            ScalarMut::i32(inner) => ScalarOwned::i32(*inner),
+            ScalarMut::i64(inner) => ScalarOwned::i64(*inner),
+            ScalarMut::i128(inner) => ScalarOwned::i128(*inner),
+            ScalarMut::bool(inner) => ScalarOwned::bool(*inner),
+            ScalarMut::char(inner) => ScalarOwned::char(*inner),
+            ScalarMut::f32(inner) => ScalarOwned::f32(*inner),
+            ScalarMut::f64(inner) => ScalarOwned::f64(*inner),
+            ScalarMut::String(inner) => ScalarOwned::String(inner.clone()),
+            ScalarMut::Ipv4Addr(inner) => ScalarOwned::Ipv4Addr(inner.clone()),
+            ScalarMut::Ipv6Addr(inner) => ScalarOwned::Ipv6Addr(inner.clone()),
+            ScalarMut::Duration(inner) => ScalarOwned::Duration(inner.clone()),
+        }
+    }
+}
+
 /// An immutable reflected value.
 ///
 /// Constructed with [`Reflect::reflect_ref`].
