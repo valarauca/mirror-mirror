@@ -962,7 +962,7 @@ impl Clone for ReflectOwned {
 }
 
 /// An owned reflected scalar type.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, PartialOrd)]
 #[allow(non_camel_case_types)]
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -1197,7 +1197,7 @@ impl<'a> ReflectRef<'a> {
 }
 
 /// An immutable reflected scalar value.
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
 #[allow(non_camel_case_types)]
 pub enum ScalarRef<'a> {
     usize(usize),
@@ -1369,7 +1369,7 @@ impl<'a> ReflectMut<'a> {
 }
 
 /// An mutable reflected scalar value.
-#[derive(Debug)]
+#[derive(Debug, PartialEq, PartialOrd)]
 #[allow(non_camel_case_types)]
 pub enum ScalarMut<'a> {
     usize(&'a mut usize),
