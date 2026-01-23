@@ -816,11 +816,31 @@ impl<'a> From<&'a mut String> for ScalarMut<'a> {
     }
 }
 
+#[derive(Debug)]
+pub struct FromReflectError {
+    expects: &'static str,
+    found: String,
+}
+impl core::fmt::Display for FromReflectError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "FromReflect failed. Expected: '{}' found: '{}'", self.expects, self.found.as_str())
+    }
+}
+impl core::error::Error for FromReflectError { }
+
 /// A trait for types which can be constructed from a reflected type.
 ///
 /// Will be implemented by `#[derive(Reflect)]`.
 pub trait FromReflect: Reflect + Sized {
     fn from_reflect(reflect: &dyn Reflect) -> Option<Self>;
+
+    fn from_reflect_with_error(reflect: &dyn Reflect) -> Result<Self,FromReflectError> {
+        Self::from_reflect(reflect)
+            .ok_or_else(|| FromReflectError {
+                expects: std::any::type_name::<Self>(),
+                found: reflect.type_name().to_string(),
+            })
+    }
 }
 
 /// An owned reflected value.

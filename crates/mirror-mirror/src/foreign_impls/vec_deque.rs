@@ -4,7 +4,6 @@ use alloc::vec::Vec;
 use core::any::Any;
 
 use crate::array::Array;
-use crate::list::ListError;
 use crate::type_info::graph::ListNode;
 use crate::type_info::graph::NodeId;
 use crate::type_info::graph::TypeGraph;
@@ -16,18 +15,15 @@ use crate::ReflectMut;
 use crate::ReflectOwned;
 use crate::ReflectRef;
 use crate::Value;
+use crate::FromReflectError;
 
 impl<T> List for VecDeque<T>
 where
     T: FromReflect + DescribeType,
 {
-    fn try_push(&mut self, element: &dyn Reflect) -> Result<(), ListError> {
-        if let Some(value) = T::from_reflect(element) {
-            VecDeque::push_back(self, value);
-            Ok(())
-        } else {
-            Err(ListError)
-        }
+    fn try_push(&mut self, element: &dyn Reflect) -> Result<(), FromReflectError> {
+        VecDeque::push_back(self, T::from_reflect_with_error(element)?);
+        Ok(())
     }
 
     fn pop(&mut self) -> Option<Box<dyn Reflect>> {
@@ -44,13 +40,9 @@ where
         }
     }
 
-    fn try_insert(&mut self, index: usize, element: &dyn Reflect) -> Result<(), ListError> {
-        if let Some(element) = T::from_reflect(element) {
-            VecDeque::insert(self, index, element);
-            Ok(())
-        } else {
-            Err(ListError)
-        }
+    fn try_insert(&mut self, index: usize, element: &dyn Reflect) -> Result<(), FromReflectError> {
+        VecDeque::insert(self, index, T::from_reflect_with_error(element)?);
+        Ok(())
     }
 }
 
